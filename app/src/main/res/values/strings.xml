@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">SampleArchitectureModel</string>
+    <string name="title_activity_basic">BasicActivity</string>
+
+
+    <string name="search_book_hint">Search book</string>
+
+</resources>
