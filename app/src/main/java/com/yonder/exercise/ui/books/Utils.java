@@ -1,7 +1,9 @@
 package com.yonder.exercise.ui.books;
 
+import android.util.Log;
+
 import com.yonder.exercise.db.BookModel;
-import com.yonder.exercise.network.model.Book;
+import com.yonder.exercise.network.model.SingleBook;
 
 import java.util.Date;
 
@@ -9,14 +11,14 @@ import java.util.Date;
  * Created by YusufMac on 30/05/17.
  */
 
-class Utils {
+public class Utils {
 
 
-    private static String getAuthor(Book book) {
+    public static String getAuthor(SingleBook book) {
         String author = "";
-        if (book.getVolumeInfo().getAuthor() != null) {
+        if (book.getVolumeInfo().getAuthors() != null) {
             StringBuilder builder = new StringBuilder();
-            for (String authorName : book.getVolumeInfo().getAuthor()) {
+            for (String authorName : book.getVolumeInfo().getAuthors()) {
                 if (builder.length() > 0) {
                     builder.append(", ");
                 }
@@ -27,8 +29,9 @@ class Utils {
         return author;
     }
 
-    static BookModel getBookModel(Book book) {
-        return new BookModel(book.getVolumeInfo().getTitle(), getAuthor(book), new Date());
+    static BookModel getBookModel(SingleBook book) {
+        Log.i("BookModel", "getBookModel: " + book.getId());
+        return new BookModel(book.getId(), book.getVolumeInfo().getTitle(), getAuthor(book), new Date());
     }
 
 

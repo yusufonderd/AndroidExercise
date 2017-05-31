@@ -4,5 +4,9 @@
 
 
     <string name="search_book_hint">Search book</string>
+    <string name="title_activity_book_detail">BookDetailActivity</string>
+
+    <string name="book_added_to_favorite">Added to favorite</string>
+    <string name="action_settings">Settings</string>
 
 </resources>

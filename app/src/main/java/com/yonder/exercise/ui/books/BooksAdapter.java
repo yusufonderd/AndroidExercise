@@ -42,12 +42,12 @@ class BooksAdapter extends RecyclerView.Adapter<BooksViewHolder> {
     @Override
     public void onBindViewHolder(BooksViewHolder holder, final int position) {
         final BookModel bookModel = booksItemList.get(position);
-        holder.getTvDescription().setText(bookModel.getTitle());
-        holder.getTvName().setText(bookModel.getAuthor());
+        holder.getTvDescription().setText(bookModel.getBookTitle());
+        holder.getTvName().setText(bookModel.getBookAuthor());
         holder.getTvCardView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                iBookModel.onBookModel(bookModel);
+                iBookModel.onClickedBookModel(bookModel);
             }
         });
     }
@@ -59,7 +59,7 @@ class BooksAdapter extends RecyclerView.Adapter<BooksViewHolder> {
     }
 
     public interface IBookModel {
-        void onBookModel(BookModel bookModel);
+        void onClickedBookModel(BookModel bookModel);
     }
 }
 

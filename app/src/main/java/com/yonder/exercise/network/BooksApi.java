@@ -1,9 +1,12 @@
 package com.yonder.exercise.network;
 
 import com.yonder.exercise.network.model.BookSearchResult;
+import com.yonder.exercise.network.model.SingleBook;
 
 import retrofit2.Call;
+import retrofit2.http.Field;
 import retrofit2.http.GET;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
@@ -13,4 +16,8 @@ import retrofit2.http.Query;
 public interface BooksApi {
     @GET("books/v1/volumes")
     Call<BookSearchResult> search(@Query("q") String search);
+
+    @GET("books/v1/volumes/{volumeId}")
+    Call<SingleBook> getItemById(@Path("volumeId") String volumeId);
+
 }

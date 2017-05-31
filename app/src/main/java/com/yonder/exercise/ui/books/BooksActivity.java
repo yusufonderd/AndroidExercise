@@ -3,6 +3,7 @@ package com.yonder.exercise.ui.books;
 import android.arch.lifecycle.LifecycleActivity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -16,6 +17,7 @@ import android.widget.EditText;
 import com.yonder.exercise.R;
 import com.yonder.exercise.db.AppDatabase;
 import com.yonder.exercise.db.BookModel;
+import com.yonder.exercise.ui.detail.BookDetailActivity;
 
 import java.util.List;
 
@@ -70,7 +72,6 @@ public class BooksActivity extends LifecycleActivity implements SwipeRefreshLayo
                 basicViewModel.loadBooks(bookNameEt.getText().toString());
             }
         });
-
         mSwipeRL.setOnRefreshListener(this);
         mSwipeRL.setRefreshing(true);
     }
@@ -87,9 +88,14 @@ public class BooksActivity extends LifecycleActivity implements SwipeRefreshLayo
         AppDatabase.destroyInstance();
     }
 
-
     @Override
-    public void onBookModel(BookModel bookModel) {
-        Snackbar.make(fab, bookModel.getTitle(), Snackbar.LENGTH_SHORT).show();
+    public void onClickedBookModel(BookModel bookModel) {
+
+        Log.i(TAG, "onClickedBookModel: " + bookModel.getBookId());
+
+
+        startActivity(new Intent(this, BookDetailActivity.class).putExtra(BookDetailActivity.BOOK_ID, bookModel.getBookId()));
+
+        Snackbar.make(fab, bookModel.getBookTitle(), Snackbar.LENGTH_SHORT).show();
     }
 }

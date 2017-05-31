@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName
 
 class BookSearchResult {
     @SerializedName("items")
-    var books: List<Book>? = null
+    var books: List<SingleBook>? = null
 
     override fun toString(): String {
         return "BookSearchResult(books=$books)"

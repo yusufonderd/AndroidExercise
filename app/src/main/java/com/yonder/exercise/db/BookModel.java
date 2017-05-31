@@ -14,17 +14,21 @@ import java.util.Date;
 public class BookModel {
     @PrimaryKey(autoGenerate = true)
     public int id;
-    private String title;
-    private String author;
+    private String bookTitle;
+    private String bookAuthor;
+    private String bookId;
     @TypeConverters(DateConverter.class)
     private Date bookDate;
 
-
-    public BookModel(String title, String author, Date bookDate) {
-        this.title = title;
-        this.author = author;
+    public BookModel(String bookId, String bookTitle, String bookAuthor, Date bookDate) {
+        this.bookId = bookId;
+        this.bookTitle = bookTitle;
+        this.bookAuthor = bookAuthor;
         this.bookDate = bookDate;
+    }
 
+    public String getBookId() {
+        return bookId;
     }
 
     public Date getBookDate() {
@@ -35,20 +39,20 @@ public class BookModel {
         return String.valueOf(id);
     }
 
-    public String getAuthor() {
-        return author;
+    public String getBookAuthor() {
+        return bookAuthor;
     }
 
-    public String getTitle() {
-        return title;
+    public String getBookTitle() {
+        return bookTitle;
     }
 
     @Override
     public String toString() {
         return "BookModel{" +
                 "id=" + id +
-                ", title='" + title + '\'' +
-                ", author='" + author + '\'' +
+                ", bookTitle='" + bookTitle + '\'' +
+                ", bookAuthor='" + bookAuthor + '\'' +
                 ", bookDate=" + bookDate +
                 '}';
     }

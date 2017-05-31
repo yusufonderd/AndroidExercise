@@ -11,8 +11,8 @@ import com.yonder.exercise.db.AppDatabase;
 import com.yonder.exercise.db.BookModel;
 import com.yonder.exercise.db.BookModelDao;
 import com.yonder.exercise.network.BooksApi;
-import com.yonder.exercise.network.model.Book;
 import com.yonder.exercise.network.model.BookSearchResult;
+import com.yonder.exercise.network.model.SingleBook;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +54,8 @@ public class BooksViewModel extends AndroidViewModel {
     private List<BookModel> getBookModelList(BookSearchResult bookSearchResult) {
 
         List<BookModel> bookModels = new ArrayList<>();
-        for (Book book : bookSearchResult.getBooks()) {
+        for (SingleBook book : bookSearchResult.getBooks()) {
+            Log.i(TAG, "getBookModelList: " + book.getId());
             BookModel bookModel = Utils.getBookModel(book);
             bookModels.add(bookModel);
         }
