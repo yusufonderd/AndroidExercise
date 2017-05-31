@@ -85,11 +85,7 @@ public class BooksViewModel extends AndroidViewModel {
                 observer.onComplete();
             }
         };
-        observable
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe();
-
+        executeObservable(observable);
     }
 
     void deleteAll() {
@@ -100,11 +96,13 @@ public class BooksViewModel extends AndroidViewModel {
                 observer.onComplete();
             }
         };
+        executeObservable(observable);
+    }
+
+    private void executeObservable(Observable<Void> observable) {
         observable
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe();
     }
-
-
 }
