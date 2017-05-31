@@ -3,8 +3,7 @@ package com.yonder.exercise.ui.books;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
-import android.os.AsyncTask;
-import android.util.Log;
+import android.support.annotation.NonNull;
 
 import com.yonder.exercise.app.App;
 import com.yonder.exercise.db.AppDatabase;
@@ -19,6 +18,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -29,8 +32,6 @@ import retrofit2.Response;
 
 public class BooksViewModel extends AndroidViewModel {
 
-
-    private static final String TAG = BooksViewModel.class.getSimpleName();
     @Inject
     BooksApi booksApi;
 
@@ -51,71 +52,59 @@ public class BooksViewModel extends AndroidViewModel {
         return books;
     }
 
-    private List<BookModel> getBookModelList(BookSearchResult bookSearchResult) {
-
+    private void addBookList(BookSearchResult bookSearchResult) {
         List<BookModel> bookModels = new ArrayList<>();
-        for (SingleBook book : bookSearchResult.getBooks()) {
-            Log.i(TAG, "getBookModelList: " + book.getId());
-            BookModel bookModel = Utils.getBookModel(book);
-            bookModels.add(bookModel);
-        }
+        if (bookSearchResult.getBooks() != null)
+            for (SingleBook book : bookSearchResult.getBooks()) {
+                BookModel bookModel = Utils.getBookModel(book);
+                bookModels.add(bookModel);
+            }
         addAll(bookModels);
-        return bookModels;
     }
 
     void loadBooks(String query) {
         booksApi.search("search+" + query)
                 .enqueue(new Callback<BookSearchResult>() {
                     @Override
-                    public void onResponse(Call<BookSearchResult> call, Response<BookSearchResult> response) {
-                        Log.i(TAG, "onResponse toString(): " + response.toString());
-                        getBookModelList(response.body());
+                    public void onResponse(@NonNull Call<BookSearchResult> call, @NonNull Response<BookSearchResult> response) {
+                        addBookList(response.body());
                     }
-
                     @Override
-                    public void onFailure(Call<BookSearchResult> call, Throwable t) {
+                    public void onFailure(@NonNull Call<BookSearchResult> call, @NonNull Throwable t) {
                         t.printStackTrace();
                     }
                 });
     }
 
-    private static class addAsyncTask extends AsyncTask<List<BookModel>, Void, Void> {
-        private AppDatabase db;
-
-        addAsyncTask(AppDatabase appDatabase) {
-            db = appDatabase;
-        }
-
-        @SafeVarargs
-        @Override
-        protected final Void doInBackground(final List<BookModel>... params) {
-            db.bookModelDao().insertAll(params[0]);
-            return null;
-        }
-    }
 
     private void addAll(final List<BookModel> bookModel) {
-        new addAsyncTask(appDatabase).execute(bookModel);
+        Observable<Void> observable = new Observable<Void>() {
+            @Override
+            protected void subscribeActual(Observer<? super Void> observer) {
+                appDatabase.bookModelDao().insertAll(bookModel);
+                observer.onComplete();
+            }
+        };
+        observable
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe();
+
     }
 
     void deleteAll() {
-        new deleteAllBooksAsyncTask(appDatabase, getBooks().getValue()).execute();
+        Observable<Void> observable = new Observable<Void>() {
+            @Override
+            protected void subscribeActual(Observer<? super Void> observer) {
+                appDatabase.bookModelDao().deleteAll(getBooks().getValue());
+                observer.onComplete();
+            }
+        };
+        observable
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe();
     }
 
-    private static class deleteAllBooksAsyncTask extends AsyncTask<Void, Void, Void> {
-        private AppDatabase db;
-        private List<BookModel> bookModels;
 
-        deleteAllBooksAsyncTask(AppDatabase appDatabase, List<BookModel> bookModels) {
-            db = appDatabase;
-            this.bookModels = bookModels;
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            db.bookModelDao().deleteAll(bookModels);
-            return null;
-        }
-
-    }
 }
