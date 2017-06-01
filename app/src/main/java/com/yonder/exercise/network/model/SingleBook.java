@@ -1,12 +1,15 @@
 package com.yonder.exercise.network.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.List;
 
 /**
  * Created by YusufMac on 30/05/17.
  */
 
-public class SingleBook {
+public class SingleBook implements Parcelable {
     /**
      * kind : books#volume
      * id : MU7FNih0ptgC
@@ -25,6 +28,27 @@ public class SingleBook {
     private BookSaleInfo saleInfo;
     private BookAccessInfo accessInfo;
 
+
+    protected SingleBook(Parcel in) {
+        kind = in.readString();
+        id = in.readString();
+        etag = in.readString();
+        selfLink = in.readString();
+        volumeInfo = in.readParcelable(BookVolumeInfo.class.getClassLoader());
+        saleInfo = in.readParcelable(BookSaleInfo.class.getClassLoader());
+    }
+
+    public static final Creator<SingleBook> CREATOR = new Creator<SingleBook>() {
+        @Override
+        public SingleBook createFromParcel(Parcel in) {
+            return new SingleBook(in);
+        }
+
+        @Override
+        public SingleBook[] newArray(int size) {
+            return new SingleBook[size];
+        }
+    };
 
     public String getKind() {
         return kind;
@@ -84,4 +108,18 @@ public class SingleBook {
     }
 
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(kind);
+        parcel.writeString(id);
+        parcel.writeString(etag);
+        parcel.writeString(selfLink);
+        parcel.writeParcelable(volumeInfo, i);
+        parcel.writeParcelable(saleInfo, i);
+    }
 }

@@ -18,9 +18,9 @@ import java.util.List;
 class BooksAdapter extends RecyclerView.Adapter<BooksViewHolder> {
 
     private List<BookModel> booksItemList;
-    private IBookModel iBookModel;
+    private OnItemClickListener iBookModel;
 
-    BooksAdapter(List<BookModel> booksItemList, IBookModel iBookModel) {
+    BooksAdapter(List<BookModel> booksItemList, OnItemClickListener iBookModel) {
         setBooksItemList(booksItemList);
         this.iBookModel = iBookModel;
     }
@@ -47,7 +47,8 @@ class BooksAdapter extends RecyclerView.Adapter<BooksViewHolder> {
         holder.getTvCardView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                iBookModel.onClickedBookModel(bookModel);
+                iBookModel.onClick(bookModel);
+
             }
         });
     }
@@ -58,8 +59,9 @@ class BooksAdapter extends RecyclerView.Adapter<BooksViewHolder> {
         return booksItemList.size();
     }
 
-    public interface IBookModel {
-        void onClickedBookModel(BookModel bookModel);
+    public interface OnItemClickListener {
+        void onClick(BookModel bookModel);
+
     }
 }
 

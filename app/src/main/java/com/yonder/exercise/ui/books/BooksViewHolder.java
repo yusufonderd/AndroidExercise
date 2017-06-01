@@ -30,8 +30,6 @@ public class BooksViewHolder extends RecyclerView.ViewHolder {
     }
 
     TextView getTvName() {
-
-
         return tvName;
     }
 

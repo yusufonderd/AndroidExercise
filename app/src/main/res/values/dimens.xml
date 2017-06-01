@@ -1,5 +1,19 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
-    <dimen name="app_bar_height">180dp</dimen>
+    <dimen name="app_bar_height">300dp</dimen>
     <dimen name="text_margin">16dp</dimen>
+    <dimen name="view_padding">5dp</dimen>
+
+    <dimen name="view_extra_padding">20dp</dimen>
+    <dimen name="view_extra_large_padding">25dp</dimen>
+    <dimen name="view_extra_xlarge_padding">30dp</dimen>
+
+
+    <!--CardView-->
+    <dimen name="card_elevation">2dp</dimen>
+    <dimen name="card_radius">1dp</dimen>
+
+    <dimen name="view_extra_xxlarge_padding">40dp</dimen>
+
+
 </resources>

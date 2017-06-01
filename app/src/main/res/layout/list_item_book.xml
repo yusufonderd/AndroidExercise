@@ -6,6 +6,7 @@
     android:layout_height="100dp"
     android:id="@+id/tvCardView"
     app:contentPadding="16dp"
+    style="@style/CardViewStyle"
     android:layout_margin="8dp">
 
     <TextView

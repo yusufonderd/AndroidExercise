@@ -10,7 +10,7 @@ import android.content.Context;
  * Created by YusufMac on 30/05/17.
  */
 
-@Database(entities = {BookModel.class}, version = 2)
+@Database(entities = {BookModel.class}, version = 3)
 public abstract class AppDatabase extends RoomDatabase {
 
 
@@ -19,9 +19,8 @@ public abstract class AppDatabase extends RoomDatabase {
     public static AppDatabase getDatabase(Context context) {
 
         if (INSTANCE == null) {
-            INSTANCE =
-                    Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "books_db")
-                            .build();
+            INSTANCE = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "books_db")
+                    .build();
         }
         return INSTANCE;
     }

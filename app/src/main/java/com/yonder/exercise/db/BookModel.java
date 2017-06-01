@@ -17,6 +17,7 @@ public class BookModel {
     private String bookTitle;
     private String bookAuthor;
     private String bookId;
+    private boolean bookFav;
     @TypeConverters(DateConverter.class)
     private Date bookDate;
 
@@ -26,6 +27,7 @@ public class BookModel {
         this.bookAuthor = bookAuthor;
         this.bookDate = bookDate;
     }
+
 
     public String getBookId() {
         return bookId;
@@ -53,7 +55,17 @@ public class BookModel {
                 "id=" + id +
                 ", bookTitle='" + bookTitle + '\'' +
                 ", bookAuthor='" + bookAuthor + '\'' +
+                ", bookId='" + bookId + '\'' +
+                ", bookFav=" + bookFav +
                 ", bookDate=" + bookDate +
                 '}';
+    }
+
+    public boolean isBookFav() {
+        return bookFav;
+    }
+
+    public void setBookFav(boolean bookFav) {
+        this.bookFav = bookFav;
     }
 }

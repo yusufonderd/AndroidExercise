@@ -5,6 +5,7 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 
+import com.orhanobut.hawk.Hawk;
 import com.yonder.exercise.app.App;
 import com.yonder.exercise.db.AppDatabase;
 import com.yonder.exercise.db.BookModel;
@@ -40,6 +41,8 @@ public class BooksViewModel extends AndroidViewModel {
 
     private AppDatabase appDatabase;
 
+    private BookSearchResult bookSearchResult;
+
     public BooksViewModel(Application application) {
         super(application);
         ((App) this.getApplication()).getAppComponent().inject(this);
@@ -52,11 +55,11 @@ public class BooksViewModel extends AndroidViewModel {
         return books;
     }
 
-    private void addBookList(BookSearchResult bookSearchResult) {
+    private void addBookList() {
         List<BookModel> bookModels = new ArrayList<>();
         if (bookSearchResult.getBooks() != null)
             for (SingleBook book : bookSearchResult.getBooks()) {
-                BookModel bookModel = Utils.getBookModel(book);
+                BookModel bookModel = BooksUtils.getBookModel(book);
                 bookModels.add(bookModel);
             }
         addAll(bookModels);
@@ -67,7 +70,8 @@ public class BooksViewModel extends AndroidViewModel {
                 .enqueue(new Callback<BookSearchResult>() {
                     @Override
                     public void onResponse(@NonNull Call<BookSearchResult> call, @NonNull Response<BookSearchResult> response) {
-                        addBookList(response.body());
+                        bookSearchResult = response.body();
+                        addBookList();
                     }
                     @Override
                     public void onFailure(@NonNull Call<BookSearchResult> call, @NonNull Throwable t) {
@@ -76,6 +80,10 @@ public class BooksViewModel extends AndroidViewModel {
                 });
     }
 
+
+    public BookSearchResult getBookSearchResult() {
+        return bookSearchResult;
+    }
 
     private void addAll(final List<BookModel> bookModel) {
         Observable<Void> observable = new Observable<Void>() {
@@ -96,6 +104,7 @@ public class BooksViewModel extends AndroidViewModel {
                 observer.onComplete();
             }
         };
+
         executeObservable(observable);
     }
 

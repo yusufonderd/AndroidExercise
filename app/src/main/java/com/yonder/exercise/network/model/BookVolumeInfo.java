@@ -1,12 +1,15 @@
 package com.yonder.exercise.network.model;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.List;
 
 /**
  * Created by YusufMac on 30/05/17.
  */
 
-public class BookVolumeInfo {
+public class BookVolumeInfo implements Parcelable {
 
 
     /**
@@ -52,6 +55,40 @@ public class BookVolumeInfo {
     private List<String> authors;
     private List<BookIndustryIdentifiers> industryIdentifiers;
 
+    protected BookVolumeInfo(Parcel in) {
+        title = in.readString();
+        subtitle = in.readString();
+        publisher = in.readString();
+        publishedDate = in.readString();
+        description = in.readString();
+        pageCount = in.readInt();
+        printedPageCount = in.readInt();
+        dimensions = in.readParcelable(BookDimensions.class.getClassLoader());
+        printType = in.readString();
+        maturityRating = in.readString();
+        allowAnonLogging = in.readByte() != 0;
+        contentVersion = in.readString();
+        imageLinks = in.readParcelable(BookImageLinks.class.getClassLoader());
+        language = in.readString();
+        previewLink = in.readString();
+        infoLink = in.readString();
+        canonicalVolumeLink = in.readString();
+        authors = in.createStringArrayList();
+        industryIdentifiers = in.createTypedArrayList(BookIndustryIdentifiers.CREATOR);
+    }
+
+    public static final Creator<BookVolumeInfo> CREATOR = new Creator<BookVolumeInfo>() {
+        @Override
+        public BookVolumeInfo createFromParcel(Parcel in) {
+            return new BookVolumeInfo(in);
+        }
+
+        @Override
+        public BookVolumeInfo[] newArray(int size) {
+            return new BookVolumeInfo[size];
+        }
+    };
+
     public String getTitle() {
         return title;
     }
@@ -93,8 +130,8 @@ public class BookVolumeInfo {
     }
 
 
-    public int getPageCount() {
-        return pageCount;
+    public String getPageCount() {
+        return String.valueOf(pageCount);
     }
 
     public void setPageCount(int pageCount) {
@@ -201,5 +238,32 @@ public class BookVolumeInfo {
         return industryIdentifiers;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(title);
+        parcel.writeString(subtitle);
+        parcel.writeString(publisher);
+        parcel.writeString(publishedDate);
+        parcel.writeString(description);
+        parcel.writeInt(pageCount);
+        parcel.writeInt(printedPageCount);
+        parcel.writeParcelable(dimensions, i);
+        parcel.writeString(printType);
+        parcel.writeString(maturityRating);
+        parcel.writeByte((byte) (allowAnonLogging ? 1 : 0));
+        parcel.writeString(contentVersion);
+        parcel.writeParcelable(imageLinks, i);
+        parcel.writeString(language);
+        parcel.writeString(previewLink);
+        parcel.writeString(infoLink);
+        parcel.writeString(canonicalVolumeLink);
+        parcel.writeStringList(authors);
+        parcel.writeTypedList(industryIdentifiers);
+    }
 }
 

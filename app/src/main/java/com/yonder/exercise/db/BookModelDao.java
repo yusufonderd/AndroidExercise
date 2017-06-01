@@ -6,6 +6,7 @@ import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.OnConflictStrategy;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.Update;
 
 import java.util.List;
 
@@ -20,13 +21,17 @@ public interface BookModelDao {
     LiveData<List<BookModel>> getAllItems();
 
     @Query("select * from BookModel where id = :id")
-    BookModel getItembyId(String id);
+    BookModel getBookbyId(String id);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insert(BookModel bookModel);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertAll(List<BookModel> bookModel);
+
+    @Update
+    void update(BookModel bookModel);
+
 
     @Delete
     void delete(BookModel bookModel);

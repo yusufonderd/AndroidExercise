@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">SampleArchitectureModel</string>
+    <string name="app_name">Book List</string>
     <string name="title_activity_basic">BasicActivity</string>
 
 
@@ -7,6 +7,7 @@
     <string name="title_activity_book_detail">BookDetailActivity</string>
 
     <string name="book_added_to_favorite">Added to favorite</string>
+    <string name="book_removed_to_favorite">Removed to favorite</string>
     <string name="action_settings">Settings</string>
 
 </resources>

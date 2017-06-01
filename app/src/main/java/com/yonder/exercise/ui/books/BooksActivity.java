@@ -3,17 +3,18 @@ package com.yonder.exercise.ui.books;
 import android.arch.lifecycle.LifecycleActivity;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
+import com.orhanobut.hawk.Hawk;
 import com.yonder.exercise.R;
 import com.yonder.exercise.db.AppDatabase;
 import com.yonder.exercise.db.BookModel;
@@ -23,8 +24,9 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
-public class BooksActivity extends LifecycleActivity implements SwipeRefreshLayout.OnRefreshListener, BooksAdapter.IBookModel {
+public class BooksActivity extends LifecycleActivity implements SwipeRefreshLayout.OnRefreshListener, BooksAdapter.OnItemClickListener {
 
     String TAG = BooksActivity.class.getSimpleName();
 
@@ -42,14 +44,18 @@ public class BooksActivity extends LifecycleActivity implements SwipeRefreshLayo
     @BindView(R.id.fab)
     FloatingActionButton fab;
 
+
+    Context context;
     BooksAdapter basicAdapter;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_books);
         ButterKnife.bind(this);
-
+        context = this;
+        Hawk.init(context).build();
         basicViewModel = ViewModelProviders.of(this).get(BooksViewModel.class);
         basicViewModel.getBooks().observe(BooksActivity.this, new Observer<List<BookModel>>() {
             @Override
@@ -65,21 +71,19 @@ public class BooksActivity extends LifecycleActivity implements SwipeRefreshLayo
                 }
             }
         });
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                basicViewModel.deleteAll();
-                basicViewModel.loadBooks(bookNameEt.getText().toString());
-            }
-        });
         mSwipeRL.setOnRefreshListener(this);
         mSwipeRL.setRefreshing(true);
     }
 
+
+    @OnClick
+    public void onClickSearchFab(View view) {
+        loadBooks();
+    }
+
     @Override
     public void onRefresh() {
-        basicViewModel.loadBooks(bookNameEt.getText().toString());
-        mSwipeRL.setRefreshing(false);
+        loadBooks();
     }
 
     @Override
@@ -88,14 +92,14 @@ public class BooksActivity extends LifecycleActivity implements SwipeRefreshLayo
         AppDatabase.destroyInstance();
     }
 
+    private void loadBooks() {
+        Hawk.deleteAll();
+        basicViewModel.deleteAll();
+        basicViewModel.loadBooks(bookNameEt.getText().toString());
+    }
+
     @Override
-    public void onClickedBookModel(BookModel bookModel) {
-
-        Log.i(TAG, "onClickedBookModel: " + bookModel.getBookId());
-
-
+    public void onClick(BookModel bookModel) {
         startActivity(new Intent(this, BookDetailActivity.class).putExtra(BookDetailActivity.BOOK_ID, bookModel.getBookId()));
-
-        Snackbar.make(fab, bookModel.getBookTitle(), Snackbar.LENGTH_SHORT).show();
     }
 }

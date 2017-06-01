@@ -3,6 +3,7 @@ package com.yonder.exercise.ui.books;
 import android.util.Log;
 
 import com.yonder.exercise.db.BookModel;
+import com.yonder.exercise.network.model.BookSearchResult;
 import com.yonder.exercise.network.model.SingleBook;
 
 import java.util.Date;
@@ -11,8 +12,9 @@ import java.util.Date;
  * Created by YusufMac on 30/05/17.
  */
 
-public class Utils {
+public class BooksUtils {
 
+    private static final String TAG = BooksUtils.class.getSimpleName();
 
     public static String getAuthor(SingleBook book) {
         String author = "";
@@ -29,10 +31,8 @@ public class Utils {
         return author;
     }
 
-    static BookModel getBookModel(SingleBook book) {
-        Log.i("BookModel", "getBookModel: " + book.getId());
+    public static BookModel getBookModel(SingleBook book) {
         return new BookModel(book.getId(), book.getVolumeInfo().getTitle(), getAuthor(book), new Date());
     }
-
 
 }

@@ -24,6 +24,7 @@
                 android:id="@+id/bookNameEt"
                 android:layout_width="match_parent"
                 android:hint="@string/search_book_hint"
+                android:layout_margin="@dimen/view_padding"
                 android:textColorHint="@color/hint_color"
                 android:layout_height="wrap_content" />
 
