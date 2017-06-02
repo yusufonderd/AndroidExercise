@@ -1,4 +1,4 @@
-package com.yonder.exercise.ui.books;
+package com.yonder.exercise.shared.adapters;
 
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -11,7 +11,7 @@ import com.yonder.exercise.R;
  * Created by YusufMac on 30/05/17.
  */
 
-public class BooksViewHolder extends RecyclerView.ViewHolder {
+class BooksViewHolder extends RecyclerView.ViewHolder {
 
     private TextView tvName;
     private TextView tvDescription;
@@ -22,7 +22,6 @@ public class BooksViewHolder extends RecyclerView.ViewHolder {
         tvName = (TextView) view.findViewById(R.id.tvName);
         tvDescription = (TextView) view.findViewById(R.id.tvDescription);
         tvCardView = (CardView) view.findViewById(R.id.tvCardView);
-
     }
 
     TextView getTvDescription() {

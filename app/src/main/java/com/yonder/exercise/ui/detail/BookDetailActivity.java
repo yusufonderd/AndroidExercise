@@ -10,13 +10,13 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.graphics.Palette;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -26,14 +26,16 @@ import com.bumptech.glide.request.transition.Transition;
 import com.orhanobut.hawk.Hawk;
 import com.yonder.exercise.R;
 import com.yonder.exercise.db.BookModel;
+import com.yonder.exercise.db.DBConstants;
 import com.yonder.exercise.network.model.SingleBook;
-import com.yonder.exercise.ui.books.BooksUtils;
-import com.yonder.exercise.ui.custom.AppBarStateChangeListener;
+import com.yonder.exercise.shared.utils.BooksUtils;
+import com.yonder.exercise.shared.listeners.AppBarStateChangeListener;
 
 import org.jetbrains.annotations.NotNull;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 public class BookDetailActivity extends LifecycleActivity {
 
@@ -58,8 +60,7 @@ public class BookDetailActivity extends LifecycleActivity {
     @BindView(R.id.toolbar_layout)
     CollapsingToolbarLayout mCollapsingToolbar;
 
-    @BindView(R.id.fab)
-    FloatingActionButton fab;
+
 
     @BindView(R.id.centerCardView)
     CardView centerCardView;
@@ -76,6 +77,9 @@ public class BookDetailActivity extends LifecycleActivity {
     AppBarLayout mAppBarLayout;
 
     BookModel bookModel;
+
+    @BindView(R.id.favButton)
+    ImageButton favButton;
 
     Bundle bundle;
 
@@ -95,40 +99,28 @@ public class BookDetailActivity extends LifecycleActivity {
         if (ifKeyExists) {
             isFavorite = Hawk.get(bookId);
             setFabImageResource(isFavorite);
+        } else {
+            setFabImageResource(false);
         }
-        detailViewModel.getBook().observe(this, new Observer<SingleBook>() {
-            @Override
-            public void onChanged(@Nullable SingleBook singleBook) {
-                mCollapsingToolbar.setTitle(BooksUtils.getAuthor(singleBook));
-                //    tvPageCount.setText(singleBook.getVolumeInfo().getPageCount());
-                tvDescription.setText(singleBook.getVolumeInfo().getDescription());
-                tvBookTitle.setText(singleBook.getVolumeInfo().getTitle());
-                bookModel = BooksUtils.getBookModel(singleBook);
-                bookModel.setBookFav(isFavorite);
-                if (singleBook.getVolumeInfo().getImageLinks() != null)
-                    Glide.with(BookDetailActivity.this) // could be an issue!
-                            .load(singleBook.getVolumeInfo().getImageLinks().getLarge())
-                            .into(glideTarget);
+        detailViewModel.getBook().observe(this, singleBook -> {
+            mCollapsingToolbar.setTitle(BooksUtils.getAuthor(singleBook));
+            tvDescription.setText(singleBook.getVolumeInfo().getDescription());
+            tvBookTitle.setText(singleBook.getVolumeInfo().getTitle());
+            bookModel = BooksUtils.getBookModel(singleBook);
+            bookModel.setBookFav(BooksUtils.getBookFab(bookModel));
+            if (singleBook.getVolumeInfo().getImageLinks() != null) {
+                Glide.with(BookDetailActivity.this) // could be an issue!
+                        .load(singleBook.getVolumeInfo().getImageLinks().getLarge())
+                        .into(glideTarget);
             }
         });
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (bookModel != null) {
-                    bookModel.setBookFav(!bookModel.isBookFav());
-                    changeFavoriteState(bookModel.isBookFav());
-                    detailViewModel.updateModel(bookModel);
-                }
-            }
-        });
-
         mAppBarLayout.addOnOffsetChangedListener(new AppBarStateChangeListener() {
             @Override
             public void onStateChanged(AppBarLayout appBarLayout, State state) {
-                if (state == State.COLLAPSED) {
-                    centerCardView.setVisibility(View.GONE);
-                } else if (state == State.EXPANDED) {
+                if (state == State.EXPANDED) {
                     centerCardView.setVisibility(View.VISIBLE);
+                } else {
+                    centerCardView.setVisibility(View.GONE);
 
                 }
             }
@@ -137,16 +129,30 @@ public class BookDetailActivity extends LifecycleActivity {
     }
 
     public void createPaletteAsync(Bitmap bitmap) {
-        Palette.from(bitmap).generate(new Palette.PaletteAsyncListener() {
-            public void onGenerated(@NotNull Palette palette) {
-                Palette.Swatch vibrantSwatch = palette.getVibrantSwatch();
-                if (vibrantSwatch != null) {
-                    mCollapsingToolbar.setContentScrimColor(vibrantSwatch.getRgb());
-                    mCollapsingToolbar.setCollapsedTitleTextColor(vibrantSwatch.getTitleTextColor());
+        Palette.from(bitmap).generate(palette -> {
+            Palette.Swatch vibrantSwatch = palette.getVibrantSwatch();
+            if (vibrantSwatch != null) {
+                mCollapsingToolbar.setContentScrimColor(vibrantSwatch.getRgb());
+                mCollapsingToolbar.setCollapsedTitleTextColor(vibrantSwatch.getTitleTextColor());
 
-                }
             }
         });
+    }
+
+
+    @OnClick
+    public void onClickFavoriteButton(View view) {
+        if (bookModel != null) {
+
+            String newFavValue = DBConstants.FAV;
+            if (isFavorite) {
+                newFavValue = DBConstants.UNFAV;
+            }
+            isFavorite = !isFavorite;
+            bookModel.setBookFav(newFavValue);
+            changeFavoriteState(isFavorite);
+            detailViewModel.updateBook(bookModel);
+        }
     }
 
     private SimpleTarget glideTarget = new SimpleTarget<Drawable>() {
@@ -161,21 +167,19 @@ public class BookDetailActivity extends LifecycleActivity {
 
     private void setFabImageResource(boolean fav) {
         if (fav)
-            fab.setImageResource(R.drawable.ic_star_black_24dp);
+            favButton.setImageResource(R.drawable.ic_favorite_black_24dp);
         else
-            fab.setImageResource(R.drawable.ic_star_border_black_24dp);
+            favButton.setImageResource(R.drawable.ic_favorite_border_black_24dp);
     }
 
     private void changeFavoriteState(boolean fav) {
         setFabImageResource(fav);
-
-
         if (fav) {
-            Snackbar.make(fab, R.string.book_added_to_favorite, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(favButton, R.string.book_added_to_favorite, Snackbar.LENGTH_LONG).show();
         } else {
-            Snackbar.make(fab, R.string.book_removed_to_favorite, Snackbar.LENGTH_LONG).show();
+            Snackbar.make(favButton, R.string.book_removed_to_favorite, Snackbar.LENGTH_LONG).show();
         }
         Hawk.put(bookId, fav);
-
     }
+
 }

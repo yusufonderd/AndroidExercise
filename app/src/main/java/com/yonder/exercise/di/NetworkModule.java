@@ -1,6 +1,10 @@
 package com.yonder.exercise.di;
 
 
+import android.arch.persistence.room.Room;
+import android.content.Context;
+
+import com.yonder.exercise.db.AppDatabase;
 import com.yonder.exercise.network.BooksApi;
 
 import javax.inject.Named;

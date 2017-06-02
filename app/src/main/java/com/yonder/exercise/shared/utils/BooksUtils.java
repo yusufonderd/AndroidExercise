@@ -1,9 +1,7 @@
-package com.yonder.exercise.ui.books;
-
-import android.util.Log;
+package com.yonder.exercise.shared.utils;
 
 import com.yonder.exercise.db.BookModel;
-import com.yonder.exercise.network.model.BookSearchResult;
+import com.yonder.exercise.db.DBConstants;
 import com.yonder.exercise.network.model.SingleBook;
 
 import java.util.Date;
@@ -35,4 +33,25 @@ public class BooksUtils {
         return new BookModel(book.getId(), book.getVolumeInfo().getTitle(), getAuthor(book), new Date());
     }
 
+
+    private static boolean isBookFav(BookModel bookModel) {
+        return bookModel.getBookFav() != null && bookModel.getBookFav().equals(DBConstants.FAV);
+    }
+
+    public static String getToggleBookFab(BookModel bookModel) {
+        boolean isFav = isBookFav(bookModel);
+        if (isFav)
+            return DBConstants.UNFAV;
+        else
+            return DBConstants.FAV;
+    }
+
+    public static String getBookFab(BookModel bookModel) {
+        boolean isFav = isBookFav(bookModel);
+        if (isFav)
+            return DBConstants.FAV;
+        else
+            return DBConstants.UNFAV;
+
+    }
 }

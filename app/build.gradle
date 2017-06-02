@@ -4,6 +4,7 @@ apply plugin: 'kotlin-android'
 
 
 
+
 android {
     compileSdkVersion 25
     buildToolsVersion "25.0.3"
@@ -14,6 +15,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
     }
     buildTypes {
         release {
@@ -22,6 +24,10 @@ android {
         }
     }
 
+    compileOptions {
+        targetCompatibility 1.8
+        sourceCompatibility 1.8
+    }
 }
 
 dependencies {
@@ -29,6 +35,11 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+
+
+
+
+
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlin_version"
     compile 'com.android.support:appcompat-v7:25.3.1'
     testCompile 'junit:junit:4.12'
@@ -41,6 +52,9 @@ dependencies {
 
     compile 'io.reactivex.rxjava2:rxjava:2.1.0'
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+
+
+
     compile 'com.orhanobut:hawk:2.0.1'
 
 
@@ -63,4 +77,5 @@ dependencies {
     compile 'android.arch.lifecycle:extensions:1.0.0-alpha1'
     compile 'android.arch.persistence.room:runtime:1.0.0-alpha1'
     annotationProcessor 'android.arch.persistence.room:compiler:1.0.0-alpha1'
+    compile 'com.android.support:support-vector-drawable:25.3.1'
 }

@@ -1,4 +1,4 @@
-package com.yonder.exercise.ui.books;
+package com.yonder.exercise.shared.adapters;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,21 +15,19 @@ import java.util.List;
  * Created by YusufMac on 30/05/17.
  */
 
-class BooksAdapter extends RecyclerView.Adapter<BooksViewHolder> {
+public class BooksRecyclerViewAdapter extends RecyclerView.Adapter<BooksViewHolder> {
 
     private List<BookModel> booksItemList;
     private OnItemClickListener iBookModel;
 
-    BooksAdapter(List<BookModel> booksItemList, OnItemClickListener iBookModel) {
+    public BooksRecyclerViewAdapter(List<BookModel> booksItemList, OnItemClickListener iBookModel) {
         setBooksItemList(booksItemList);
         this.iBookModel = iBookModel;
     }
 
-    void setBooksItemList(List<BookModel> booksItemList) {
-        if (booksItemList == null)
-            this.booksItemList = new ArrayList<>();
-        else
-            this.booksItemList = booksItemList;
+    public void setBooksItemList(List<BookModel> booksItemList) {
+        if (booksItemList == null) this.booksItemList = new ArrayList<>();
+        else this.booksItemList = booksItemList;
     }
 
     @Override
@@ -44,13 +42,7 @@ class BooksAdapter extends RecyclerView.Adapter<BooksViewHolder> {
         final BookModel bookModel = booksItemList.get(position);
         holder.getTvDescription().setText(bookModel.getBookTitle());
         holder.getTvName().setText(bookModel.getBookAuthor());
-        holder.getTvCardView().setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                iBookModel.onClick(bookModel);
-
-            }
-        });
+        holder.getTvCardView().setOnClickListener(view -> iBookModel.onClick(bookModel));
     }
 
 

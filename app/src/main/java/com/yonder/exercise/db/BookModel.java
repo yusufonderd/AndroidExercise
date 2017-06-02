@@ -17,7 +17,9 @@ public class BookModel {
     private String bookTitle;
     private String bookAuthor;
     private String bookId;
-    private boolean bookFav;
+
+
+    private String bookFav;
     @TypeConverters(DateConverter.class)
     private Date bookDate;
 
@@ -26,29 +28,51 @@ public class BookModel {
         this.bookTitle = bookTitle;
         this.bookAuthor = bookAuthor;
         this.bookDate = bookDate;
+        this.bookFav = DBConstants.UNFAV;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
 
+    public void setBookTitle(String bookTitle) {
+        this.bookTitle = bookTitle;
+    }
+
+    public void setBookAuthor(String bookAuthor) {
+        this.bookAuthor = bookAuthor;
+    }
+
+    public void setBookId(String bookId) {
+        this.bookId = bookId;
+    }
+
+    public void setBookDate(Date bookDate) {
+        this.bookDate = bookDate;
+    }
+
+    public void setBookFav(String bookFav) {
+        this.bookFav = bookFav;
+    }
+
+    public String getBookFav() {
+        return bookFav;
+    }
     public String getBookId() {
         return bookId;
     }
-
     public Date getBookDate() {
         return bookDate;
     }
-
     public String getId() {
         return String.valueOf(id);
     }
-
     public String getBookAuthor() {
         return bookAuthor;
     }
-
     public String getBookTitle() {
         return bookTitle;
     }
-
     @Override
     public String toString() {
         return "BookModel{" +
@@ -61,11 +85,5 @@ public class BookModel {
                 '}';
     }
 
-    public boolean isBookFav() {
-        return bookFav;
-    }
 
-    public void setBookFav(boolean bookFav) {
-        this.bookFav = bookFav;
-    }
 }

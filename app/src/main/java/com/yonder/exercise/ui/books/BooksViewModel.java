@@ -5,24 +5,21 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.support.annotation.NonNull;
 
-import com.orhanobut.hawk.Hawk;
 import com.yonder.exercise.app.App;
 import com.yonder.exercise.db.AppDatabase;
 import com.yonder.exercise.db.BookModel;
-import com.yonder.exercise.db.BookModelDao;
 import com.yonder.exercise.network.BooksApi;
 import com.yonder.exercise.network.model.BookSearchResult;
 import com.yonder.exercise.network.model.SingleBook;
+import com.yonder.exercise.shared.utils.BooksUtils;
+import com.yonder.exercise.shared.utils.ObservableUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
+import io.reactivex.Completable;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -31,48 +28,50 @@ import retrofit2.Response;
  * Created by YusufMac on 30/05/17.
  */
 
-public class BooksViewModel extends AndroidViewModel {
+public class BooksViewModel extends AndroidViewModel implements IBooksRepository {
+    String TAG = BooksViewModel.class.getSimpleName();
+
 
     @Inject
     BooksApi booksApi;
+    @Inject
+    AppDatabase appDatabase;
 
-    private BookModelDao bookModelDao;
     private LiveData<List<BookModel>> books;
 
-    private AppDatabase appDatabase;
 
     private BookSearchResult bookSearchResult;
 
     public BooksViewModel(Application application) {
         super(application);
         ((App) this.getApplication()).getAppComponent().inject(this);
-        appDatabase = AppDatabase.getDatabase(this.getApplication());
-        bookModelDao = appDatabase.bookModelDao();
-        books = bookModelDao.getAllItems();
+        books = appDatabase.bookModelDao().getAllItems();
+
+
     }
 
-    LiveData<List<BookModel>> getBooks() {
+
+    @Override
+    public LiveData<List<BookModel>> getAllBooks() {
         return books;
     }
 
-    private void addBookList() {
-        List<BookModel> bookModels = new ArrayList<>();
-        if (bookSearchResult.getBooks() != null)
-            for (SingleBook book : bookSearchResult.getBooks()) {
-                BookModel bookModel = BooksUtils.getBookModel(book);
-                bookModels.add(bookModel);
-            }
-        addAll(bookModels);
-    }
-
-    void loadBooks(String query) {
+    @Override
+    public void loadBooks(String query) {
         booksApi.search("search+" + query)
                 .enqueue(new Callback<BookSearchResult>() {
                     @Override
                     public void onResponse(@NonNull Call<BookSearchResult> call, @NonNull Response<BookSearchResult> response) {
                         bookSearchResult = response.body();
-                        addBookList();
+                        List<BookModel> bookModels = new ArrayList<>();
+                        if (bookSearchResult.getBooks() != null)
+                            for (SingleBook book : bookSearchResult.getBooks()) {
+                                BookModel bookModel = BooksUtils.getBookModel(book);
+                                bookModels.add(bookModel);
+                            }
+                        insertAllBooks(bookModels);
                     }
+
                     @Override
                     public void onFailure(@NonNull Call<BookSearchResult> call, @NonNull Throwable t) {
                         t.printStackTrace();
@@ -80,38 +79,16 @@ public class BooksViewModel extends AndroidViewModel {
                 });
     }
 
-
-    public BookSearchResult getBookSearchResult() {
-        return bookSearchResult;
+    @Override
+    public void deleteAllBooks() {
+        Completable completable = Completable.fromAction(() -> appDatabase.bookModelDao().deleteAll());
+        ObservableUtil.completableObserver(completable);
     }
 
-    private void addAll(final List<BookModel> bookModel) {
-        Observable<Void> observable = new Observable<Void>() {
-            @Override
-            protected void subscribeActual(Observer<? super Void> observer) {
-                appDatabase.bookModelDao().insertAll(bookModel);
-                observer.onComplete();
-            }
-        };
-        executeObservable(observable);
-    }
 
-    void deleteAll() {
-        Observable<Void> observable = new Observable<Void>() {
-            @Override
-            protected void subscribeActual(Observer<? super Void> observer) {
-                appDatabase.bookModelDao().deleteAll(getBooks().getValue());
-                observer.onComplete();
-            }
-        };
-
-        executeObservable(observable);
-    }
-
-    private void executeObservable(Observable<Void> observable) {
-        observable
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe();
+    @Override
+    public void insertAllBooks(List<BookModel> bookModels) {
+        Completable completable = Completable.fromAction(() -> appDatabase.bookModelDao().insertAll(bookModels));
+        ObservableUtil.completableObserver(completable);
     }
 }

@@ -4,24 +4,21 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.util.Log;
 
 import com.yonder.exercise.app.App;
 import com.yonder.exercise.db.AppDatabase;
 import com.yonder.exercise.db.BookModel;
-import com.yonder.exercise.db.BookModelDao;
 import com.yonder.exercise.network.BooksApi;
 import com.yonder.exercise.network.model.SingleBook;
+import com.yonder.exercise.shared.utils.ObservableUtil;
 
 
-import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 import javax.inject.Inject;
 
-import io.reactivex.Observable;
-import io.reactivex.Observer;
+import io.reactivex.Completable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -31,82 +28,47 @@ import retrofit2.Response;
  * Created by YusufMac on 30/05/17.
  */
 
-public class BookDetailViewModel extends AndroidViewModel {
+public class BookDetailViewModel extends AndroidViewModel implements IBookDetailRepository {
 
-    public static String TAG = BookDetailViewModel.class.getSimpleName();
     @Inject
     BooksApi booksApi;
 
-    MutableLiveData<SingleBook> book;
+    @Inject
+    AppDatabase appDatabase;
 
-    private AppDatabase appDatabase;
-    BookModelDao bookModelDao;
+    private MutableLiveData<SingleBook> book;
 
     public BookDetailViewModel(Application application) {
         super(application);
         ((App) this.getApplication()).getAppComponent().inject(this);
-        appDatabase = AppDatabase.getDatabase(this.getApplication());
-        bookModelDao = appDatabase.bookModelDao();
+        book = new MutableLiveData<>();
     }
 
-    void loadBook(String bookId) {
+    @Override
+    public void loadBook(String bookId) {
         booksApi.getItemById(bookId).enqueue(new Callback<SingleBook>() {
             @Override
-            public void onResponse(Call<SingleBook> call, Response<SingleBook> response) {
+            public void onResponse(@NotNull Call<SingleBook> call, @NotNull Response<SingleBook> response) {
                 book.setValue(response.body());
             }
 
             @Override
-            public void onFailure(Call<SingleBook> call, Throwable t) {
+            public void onFailure(@NotNull Call<SingleBook> call, @NotNull Throwable t) {
                 t.printStackTrace();
             }
         });
     }
 
-
-    public void updateModel(final BookModel bookModel) {
-        Observable<BookModel> observable = new Observable<BookModel>() {
-            @Override
-            protected void subscribeActual(Observer<? super BookModel> observer) {
-                appDatabase.bookModelDao().update(bookModel);
-                observer.onNext(bookModel);
-                observer.onComplete();
-            }
-        };
-        executeObservable(observable);
+    @Override
+    public void updateBook(BookModel bookModel) {
+        Completable completable = Completable.fromAction(() -> appDatabase.bookModelDao().update(bookModel.getBookFav(), bookModel.getBookId()));
+        ObservableUtil.completableObserver(completable);
     }
 
-    private void executeObservable(Observable<BookModel> observable) {
-        observable
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Observer<BookModel>() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-                        Log.i(TAG, "onSubscribe: ");
-                    }
-
-                    @Override
-                    public void onNext(BookModel bookModel) {
-                        Log.i(TAG, "onNext: " + bookModel.toString());
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.i(TAG, "onError: " + e.getMessage());
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        Log.i(TAG, "onComplete: ");
-                    }
-                });
-    }
-
-
-    LiveData<SingleBook> getBook() {
-        if (book == null)
-            book = new MutableLiveData<>();
+    @Override
+    public LiveData<SingleBook> getBook() {
         return book;
     }
+
+
 }

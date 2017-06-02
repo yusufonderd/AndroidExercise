@@ -1,4 +1,4 @@
-package com.yonder.exercise.ui.custom;
+package com.yonder.exercise.shared.listeners;
 
 import android.support.design.widget.AppBarLayout;
 
