@@ -78,7 +78,7 @@
                     android:background="@color/colorAccent"
                     android:padding="@dimen/view_extra_padding"
                     android:onClick="onClickFavoriteButton"
-                    android:src="@drawable/ic_favorite_black_24dp" />
+                    app:srcCompat="@drawable/ic_favorite_black_24dp" />
 
             </FrameLayout>
 
