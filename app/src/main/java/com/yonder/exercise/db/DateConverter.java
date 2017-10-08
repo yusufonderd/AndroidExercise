@@ -1,5 +1,9 @@
 package com.yonder.exercise.db;
 
+/**
+ * Created by YusufMac on 08/10/2017.
+ */
+
 import android.arch.persistence.room.TypeConverter;
 
 import java.util.Date;

@@ -28,33 +28,14 @@ public class BookModel {
         this.bookTitle = bookTitle;
         this.bookAuthor = bookAuthor;
         this.bookDate = bookDate;
-        this.bookFav = DBConstants.UNFAV;
+        this.bookFav = DBConstants.INSTANCE.getUNFAV();
     }
-
     public void setId(int id) {
         this.id = id;
     }
-
-    public void setBookTitle(String bookTitle) {
-        this.bookTitle = bookTitle;
-    }
-
-    public void setBookAuthor(String bookAuthor) {
-        this.bookAuthor = bookAuthor;
-    }
-
-    public void setBookId(String bookId) {
-        this.bookId = bookId;
-    }
-
-    public void setBookDate(Date bookDate) {
-        this.bookDate = bookDate;
-    }
-
     public void setBookFav(String bookFav) {
         this.bookFav = bookFav;
     }
-
     public String getBookFav() {
         return bookFav;
     }

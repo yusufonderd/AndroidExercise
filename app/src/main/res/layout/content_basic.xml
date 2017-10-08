@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.yonder.exercise.ui.books.BooksFragment"
-    tools:showIn="@layout/activity_books">
+    tools:showIn="@layout/fragment_books">
 
     <android.support.v4.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -30,7 +30,7 @@
 
 
             <android.support.v7.widget.RecyclerView
-                android:id="@+id/rv"
+                android:id="@+id/bookRv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:layoutManager="LinearLayoutManager" />
